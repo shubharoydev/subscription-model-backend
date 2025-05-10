@@ -16,8 +16,8 @@ This is a Node.js backend project built with Express.js and MongoDB. It provides
 
 ### 1. Clone the Repository (if applicable)
 ```bash
-git clone <your-repository-url>
-cd BACKEND_PROJECT
+git clone https://github.com/shubharoydev/subscription-model-backend
+cd subscription-model-backend
 ````
 
 ### 2. Install Dependencies
