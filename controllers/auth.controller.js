@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-
+const User = require("../models/User.model.js");
 
 // signUp function to handle user registration
 const signUp = async (req, res, next) => {
@@ -36,8 +35,16 @@ const signUp = async (req, res, next) => {
       { session }
     );
 
+    // Validate JWT environment variables
+    if (!process.env.JWT_SECRET_KEY) {
+      throw new Error("JWT_SECRET_KEY is not defined in environment variables");
+    }
+    if (!process.env.JWT_EXPIRES_IN) {
+      throw new Error("JWT_EXPIRES_IN is not defined in environment variables");
+    }
+
     // Generate JWT
-    const token = jwt.sign({ id: newUser[0]._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: newUser[0]._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
@@ -50,7 +57,7 @@ const signUp = async (req, res, next) => {
       user: {
         id: newUser[0]._id,
         name: newUser[0].name,
-        email: newUser[0].email,
+        email: newUser[0].email, 
       },
       token,
     });
@@ -60,19 +67,64 @@ const signUp = async (req, res, next) => {
     return res.status(500).json({ message: error.message });
   }
 };
-module.exports = signUp;
-
 
 // signIn function to handle user sign-in
 const signIn = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
 
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    // Validate JWT environment variables
+    if (!process.env.JWT_SECRET_KEY) {
+      throw new Error("JWT_SECRET_KEY is not defined in environment variables");
+    }
+    if (!process.env.JWT_EXPIRES_IN) {
+      throw new Error("JWT_EXPIRES_IN is not defined in environment variables");
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "User signed in successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
-module.exports = signIn;
 
-
-
-// signOut function to handle user sign-out
+// signOut function 
 const signOut = async (req, res, next) => {
-
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "User signed out successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
-module.exports = signOut;
+
+// Export all functions
+module.exports = {
+  signUp,
+  signIn,
+  signOut,
+};
