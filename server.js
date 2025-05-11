@@ -1,30 +1,39 @@
-require('dotenv').config(); // Load environment variables
+// Load environment variables
+import dotenv from 'dotenv';
+dotenv.config();
 
-const cookieParser = require('cookie-parser'); // Middleware to parse cookies
-const express = require('express');
-const authRouter = require('./routes/auth.routes');
-const userRouter = require('./routes/user.routes');
-const subscriptionRouter = require('./routes/subscription.routes');
-const { connectDB } = require('./config/db'); // Import database connection
-const errorMiddleware = require('./middleware/error.middleware'); // Fixed import
+import express from 'express';
+import cookieParser from 'cookie-parser';
+
+import authRouter from './routes/auth.routes.js';
+import userRouter from './routes/user.routes.js';
+import subscriptionRouter from './routes/subscription.routes.js';
+
+import { connectDB } from './config/db.js';
+import errorMiddleware from './middleware/error.middleware.js';
+
 
 const app = express();
+
 const PORT = process.env.PORT || 8000;
 
-connectDB(); // Connect the database
+connectDB(); // Connect to the database
 
 // Middleware
-app.use(cookieParser()); // Parse cookies
-app.use(express.urlencoded({ extended: false })); // Parse URL-encoded requests
-app.use(express.json()); // Parse JSON requests
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
 
 // Routes
-app.use('/api/v1/auth', authRouter); // Authentication routes
-app.use('/api/v1/users', userRouter); // User routes
-app.use('/api/v1/subscriptions', subscriptionRouter); // Subscription routes
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/subscriptions', subscriptionRouter);
 
+// Error handling
 app.use(errorMiddleware);
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

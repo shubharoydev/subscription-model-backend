@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// models/subscription.model.js
+import mongoose from "mongoose";
 
 const subscriptionSchema = new mongoose.Schema({
   name: {
@@ -27,14 +28,14 @@ const subscriptionSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['sports', 'entertainment', 'education', 'health'],
-    default: 'entertainment',
+    enum: ['Sports', 'Entertainment', 'Education', 'Health'],
+    default: 'Entertainment',
   },
   paymentMethod: {
     type: String,
     required: true,
-    enum: ['credit_card', 'debit_card', 'paypal'],
-    default: 'credit_card',
+    enum: ['Credit Card', 'Debit Card', 'Paypal'],
+    default: 'Credit Card',
   },
   status: {
     type: String,
@@ -89,7 +90,6 @@ subscriptionSchema.pre('save', function (next) {
   next();
 });
 
-module.exports = mongoose.model('Subscription', subscriptionSchema);
+const Subscription = mongoose.model('Subscription', subscriptionSchema);
 
-
-
+export default Subscription;

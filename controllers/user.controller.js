@@ -1,4 +1,5 @@
-const User = require('../models/User.model');
+// controllers/user.controller.js
+import User from '../models/User.model.js';
 
 // Get all users
 const getAllUsers = async (req, res, next) => {
@@ -23,8 +24,4 @@ const getAllUser = async (req, res, next) => {
   }
 };
 
-// Export the functions
-module.exports = {
-  getAllUsers,
-  getAllUser,
-};
+export { getAllUsers, getAllUser };

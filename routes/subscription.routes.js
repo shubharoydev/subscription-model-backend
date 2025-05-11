@@ -1,18 +1,14 @@
-const express = require("express");
-
+// routes/subscription.routes.js
+import express from "express";
+import { authorize } from "../middleware/auth.middleware.js";
+import { createSubscription, getUserSubscriptions } from "../controllers/subscription.controller.js";
 const subscriptionRouter = express.Router();
-
-subscriptionRouter.get('/', (req, res) => {
-  res.json({ title: 'Get all subscriptions' });
-});
 
 subscriptionRouter.get('/:id', (req, res) => {
   res.json({ title: 'Get subscription details' });
 });
 
-subscriptionRouter.post('/', (req, res) => {
-  res.json({ title: 'Create subscription' });
-});
+subscriptionRouter.post('/', authorize, createSubscription);
 
 subscriptionRouter.put('/:id', (req, res) => {
   res.json({ title: 'Update subscription' });
@@ -22,9 +18,7 @@ subscriptionRouter.delete('/:id', (req, res) => {
   res.json({ title: 'Delete subscription' });
 });
 
-subscriptionRouter.get('/user/:id', (req, res) => {
-  res.json({ title: 'Get all subscriptions for user' });
-});
+subscriptionRouter.get('/user/:userId', authorize, getUserSubscriptions);
 
 subscriptionRouter.put('/:id/cancel', (req, res) => {
   res.json({ title: 'Cancel subscription' });
@@ -34,4 +28,4 @@ subscriptionRouter.get('/upcoming-renewals', (req, res) => {
   res.json({ title: 'Upcoming renewals' });
 });
 
-module.exports = subscriptionRouter;
+export default subscriptionRouter;

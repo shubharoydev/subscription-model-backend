@@ -1,7 +1,8 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User.model.js");
+// controllers/auth.controller.js
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import User from "../models/User.model.js";
 
 // signUp function to handle user registration
 const signUp = async (req, res, next) => {
@@ -57,7 +58,7 @@ const signUp = async (req, res, next) => {
       user: {
         id: newUser[0]._id,
         name: newUser[0].name,
-        email: newUser[0].email, 
+        email: newUser[0].email,
       },
       token,
     });
@@ -110,7 +111,7 @@ const signIn = async (req, res, next) => {
   }
 };
 
-// signOut function 
+// signOut function
 const signOut = async (req, res, next) => {
   try {
     return res.status(200).json({
@@ -122,9 +123,4 @@ const signOut = async (req, res, next) => {
   }
 };
 
-// Export all functions
-module.exports = {
-  signUp,
-  signIn,
-  signOut,
-};
+export { signUp, signIn, signOut };
