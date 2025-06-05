@@ -14,7 +14,8 @@ const aj = arcjet({
         "CHROME", // Allow Chrome browsers
         "FIREFOX", // Allow Firefox browsers
         "SAFARI", // Allow Safari browsers
-        "POSTMAN", // Allow Postman for testing
+        "POSTMAN",// Allow Postman for testing
+        "SERVER_URL" 
         // Add other categories or specific bots as needed
         // See https://arcjet.com/bot-list
       ],

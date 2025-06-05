@@ -2,8 +2,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/User.model.js";
-
+import User from "../models/user.model.js";
 // signUp function to handle user registration
 const signUp = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -12,12 +11,36 @@ const signUp = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
+    // Validate required fields
+    if (!name || !email || !password) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ 
+        success: false,
+        message: "Please provide name, email and password" 
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /.+\@.+\..+/;
+    if (!emailRegex.test(email)) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ 
+        success: false,
+        message: "Please provide a valid email address" 
+      });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ email }).session(session);
     if (existingUser) {
       await session.abortTransaction();
       session.endSession();
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ 
+        success: false,
+        message: "User already exists" 
+      });
     }
 
     // Hash password
@@ -49,11 +72,19 @@ const signUp = async (req, res, next) => {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
+    // Set token in cookie for enhanced security
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      secure: process.env.NODE_ENV === 'production'
+    });
+
     // Commit transaction
     await session.commitTransaction();
     session.endSession();
 
     return res.status(201).json({
+      success: true,
       message: "User created successfully",
       user: {
         id: newUser[0]._id,
@@ -65,7 +96,7 @@ const signUp = async (req, res, next) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    return res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -74,14 +105,30 @@ const signIn = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
+    // Validate required fields
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Please provide email and password" 
+      });
     }
 
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid credentials" 
+      });
+    }
+
+    // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid credentials" 
+      });
     }
 
     // Validate JWT environment variables
@@ -92,8 +139,16 @@ const signIn = async (req, res, next) => {
       throw new Error("JWT_EXPIRES_IN is not defined in environment variables");
     }
 
+    // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    // Set token in cookie for enhanced security
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      secure: process.env.NODE_ENV === 'production'
     });
 
     return res.status(200).json({
