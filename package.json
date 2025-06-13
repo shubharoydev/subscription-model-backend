@@ -1,0 +1,38 @@
+{
+  "name": "subscription-model-backend",
+  "version": "1.0.0",
+  "description": "This is a Node.js backend project built with Express.js and MongoDB. It provides user authentication (sign-up, sign-in, sign-out) and user data retrieval functionalities. The project uses Mongoose for MongoDB interactions, JWT for authentication, and bcrypt for password hashing.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shubharoydev/subscription-model-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shubharoydev/subscription-model-backend/issues"
+  },
+  "homepage": "https://github.com/shubharoydev/subscription-model-backend#readme",
+  "dependencies": {
+    "@arcjet/node": "^1.0.0-beta.8",
+    "@upstash/workflow": "^0.2.13",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.15.1",
+    "nodemailer": "^7.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
